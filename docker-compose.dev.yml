@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: development
+        volumes:
+            - '.:/usr/src/app'
+        ports:
+            - '3000:3000'
+        depends_on:
+            - database
+        links:
+            - database:database
+        environment:
+            # Application specific
+            JWT_SECRET: 'MY_VERY_SECURE_KEY'
+            # This should match the alias of the links property
+            TYPEORM_HOST: 'database'
+            # These should match the MariaDB configuration
+            TYPEORM_DATABASE: 'bounty'
+            TYPEORM_USERNAME: 'bounty'
+            TYPEORM_PASSWORD: 'abc12345'
+
+    database:
+        image: mariadb:10.3
+        volumes:
+            # Let Docker create and manage the 'db-data' volume
+            - 'db-data:/var/lib/mysql'
+        ports:
+            - '3306:3306'
+        environment:
+            # Application specific
+            MYSQL_ROOT_PASSWORD: 'root'
+            # These should match the TypeORM configuration
+            MYSQL_DATABASE: 'bounty'
+            MYSQL_USER:     'bounty'
+            MYSQL_PASSWORD: 'abc12345'
+
+volumes:
+    db-data: {}

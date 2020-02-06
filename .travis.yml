@@ -1,0 +1,94 @@
+language: node_js
+
+cache:
+    directories:
+      - 'node_modules'
+
+env:
+    global:
+      # Application
+      - BASE_URL=http://127.0.0.1:3000
+      - PORT=3000
+      # Authentication
+      - GITHUB_LOGIN_ENABLED=true
+      - GITHUB_CLIENT_ID=RANDOM_ID
+      - GITHUB_CLIENT_SECRET=RANDOM_SECRET
+      - JWT_SECRET=SUPER_SECRET_TRAVIS_KEY
+      # Database
+      - TYPEORM_CONNECTION=mysql
+      - TYPEORM_HOST=localhost
+      - TYPEORM_DATABASE=bounty_test
+      - TYPEORM_USERNAME=root
+      - TYPEORM_PASSWORD=
+
+jobs:
+  include:
+    - stage: linter
+      node_js: 12.14.1
+      install:
+        - npm ci
+      script:
+        - npm run lint -- --quiet
+
+    - stage: docker
+      name: production
+      services:
+        - docker
+      install: skip
+      script:
+        - >
+          docker-compose 
+          -f docker-compose.yml
+          build
+
+    - stage: docker
+      name: development
+      services:
+        - docker
+      install: skip
+      script:
+        - >
+          docker-compose 
+          -f docker-compose.yml
+          -f docker-compose.dev.yml
+          build
+
+    - stage: test
+      name: e2e
+      node_js: 12.14.1
+      addons:
+        mariadb: '10.3'
+      before_install:
+        - mysql -e 'CREATE DATABASE IF NOT EXISTS bounty_test;'
+      install:
+        - npm ci
+      before_script:
+        - >
+          TYPEORM_MIGRATIONS=src/migration/*.ts
+          npm run typeorm -- migration:run
+        - >
+          TYPEORM_MIGRATIONS=test/populate/*.ts
+          npm run typeorm -- migration:run
+      script:
+        - npm run test:e2e
+
+    - stage: test
+      name: coverage
+      node_js: 12.14.1
+      addons:
+        mariadb: '10.3'
+      before_install:
+        - mysql -e 'CREATE DATABASE IF NOT EXISTS bounty_test;'
+      install:
+        - npm ci
+      before_script:
+        - >
+          TYPEORM_MIGRATIONS=src/migration/*.ts
+          npm run typeorm -- migration:run
+        - >
+          TYPEORM_MIGRATIONS=test/populate/*.ts
+          npm run typeorm -- migration:run
+      script:
+        - npm run test:cov
+      after_success:
+        - codecov
