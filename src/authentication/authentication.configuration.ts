@@ -14,10 +14,12 @@ const ConfigurationSchema = Joi.object({
     .required(),
 
   GITHUB_CLIENT_ID: Joi.string()
-    .when('GITHUB_LOGIN_ENABLED', { is: true, then: Joi.required(), otherwise: Joi.optional() }),
+    .when('GITHUB_LOGIN_ENABLED', { is: true, then: Joi.required(), otherwise: Joi.optional() })
+    .when('GITHUB_LOGIN_ENABLED', { is: false, then: Joi.string().default('FAKE_ID') }),
 
   GITHUB_CLIENT_SECRET: Joi.string()
-    .when('GITHUB_LOGIN_ENABLED', { is: true, then: Joi.required(), otherwise: Joi.optional() }),
+    .when('GITHUB_LOGIN_ENABLED', { is: true, then: Joi.required(), otherwise: Joi.optional() })
+    .when('GITHUB_LOGIN_ENABLED', { is: false, then: Joi.string().default('FAKE_SECRET') }),
 
   JWT_SECRET: Joi.string()
     .required(),
