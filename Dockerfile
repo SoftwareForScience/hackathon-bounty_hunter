@@ -13,6 +13,11 @@ RUN yum install --quiet --assumeyes \
     gcc-c++ \
     make
 
+# Install required pdflatex dependencies
+RUN yum install --quiet --assumeyes \
+    texlive \
+    texlive-*.noarch
+
 
 #
 # ---- Node Version Manager ----
