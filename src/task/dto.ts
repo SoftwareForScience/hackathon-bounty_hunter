@@ -36,9 +36,14 @@ export class StudentCreatedTaskBodyDto extends CreateTaskBodyDto {
   status = Status.Requested;
 }
 
-export class TeacherAcceptedTaskBodyDto {
+export class UserConnectsTaskDto {
   @ApiProperty()
   taskId: number;
+}
 
+export class TeacherAcceptedTaskBodyDto extends UserConnectsTaskDto {
   assessor: User;
+}
+export class StudentAppliesTaskBodyDto extends UserConnectsTaskDto {
+  student: User;
 }

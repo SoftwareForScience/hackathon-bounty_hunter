@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
-import { StudentCreatedTaskBodyDto, TeacherAcceptedTaskBodyDto, TeacherCreatedTaskBodyDto } from './dto';
+import { StudentAppliesTaskBodyDto, StudentCreatedTaskBodyDto, TeacherAcceptedTaskBodyDto, TeacherCreatedTaskBodyDto } from './dto';
 import { Status, Task } from './task.entity';
 
 @Injectable()
@@ -32,5 +32,16 @@ export class TaskService {
     dbTask.assessor = { id: teacher.userId } as any as User;
     dbTask.status = Status.Occupied;
     return this.taskRepository.save(dbTask);
+  }
+
+  async apply (student, task: StudentAppliesTaskBodyDto): Promise<Task> {
+    const dbTask = await this.taskRepository.findOne(task.taskId);
+    if (!dbTask) {
+      throw new NotFoundException(`Task with id: ${task.taskId.toLocaleString()} not found`);
+    }
+
+    dbTask.student = { id: student.userId } as any as User;
+    dbTask.status = Status.Occupied;
+    return this.taskRepository.save(task);
   }
 }

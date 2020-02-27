@@ -2,7 +2,7 @@ import { Body, Controller, Get, Patch, Post, Request, UseGuards } from '@nestjs/
 import { ApiBearerAuth, ApiBody, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { UnauthorizedResponseDto } from '../authentication/dto';
 import { JwtAuthGuard } from '../authentication/guard/jwtAuth.guard';
-import { Status, StudentCreatedTaskBodyDto, TeacherAcceptedTaskBodyDto, TeacherCreatedTaskBodyDto } from './dto';
+import { Status, StudentAppliesTaskBodyDto, StudentCreatedTaskBodyDto, TeacherAcceptedTaskBodyDto, TeacherCreatedTaskBodyDto } from './dto';
 import { TaskService } from './task.service';
 
 @Controller('task')
@@ -11,6 +11,14 @@ export class TaskController {
   constructor (
     private readonly taskService: TaskService,
   ) { }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async tasks () {
+    return this.taskService.getAll();
+  }
 
   @ApiBody({ type: TeacherCreatedTaskBodyDto })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
@@ -42,11 +50,12 @@ export class TaskController {
     return this.taskService.acceptAssesing(req.user, task);
   }
 
-  @ApiBearerAuth()
+  @ApiBody({ type: StudentAppliesTaskBodyDto })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
+  @ApiBearerAuth()
+  @Patch('apply')
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async tasks () {
-    return this.taskService.getAll();
+  async apply (@Request() req, @Body() body) {
+    return this.taskService.apply(req.user, body);
   }
 }
