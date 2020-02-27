@@ -23,13 +23,23 @@ describe('ApplicationService', () => {
     expect(applicationService).toBeDefined();
   });
 
-  describe('getHello', () => {
-    it('should return "Hello World!"', () => {
+  describe('getTitle', () => {
+    it('should return "Bounty Hunter"', () => {
       // Act
-      const res = applicationService.getHello();
+      const res = applicationService.getTitle();
 
       // Assert
-      expect(res).toStrictEqual('Hello World!');
+      expect(res).toStrictEqual('Bounty Hunter');
+    });
+  });
+
+  describe('getVersion', () => {
+    it('should return a version matching the Semantic Versioning scheme', () => {
+      // Act
+      const res = applicationService.getVersion();
+
+      // Assert
+      expect(res).toMatch('\\d+\\.\\d+\\.\\d');
     });
   });
 });

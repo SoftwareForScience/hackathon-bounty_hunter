@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as compression from 'compression';
 import * as helmet from 'helmet';
+import { APPLICATION_DESCRIPTION, APPLICATION_TITLE } from './application/application.constants';
 import { ApplicationModule } from './application/application.module';
 import { EVENT_MODULE_OPTIONS } from './event/event.constants';
 
@@ -17,9 +18,9 @@ async function bootstrap () {
   app.use(helmet());
 
   const options = new DocumentBuilder()
-    .setTitle('bounty system')
-    .setDescription('The API description for the bounty system')
-    .setVersion('0.0.1')
+    .setTitle(APPLICATION_TITLE)
+    .setDescription(APPLICATION_DESCRIPTION)
+    .setVersion(APPLICATION_DESCRIPTION)
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);

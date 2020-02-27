@@ -8,8 +8,12 @@ export class ApplicationController {
   constructor (private readonly applicationService: ApplicationService) {}
 
   @Get()
-  getHello (): string {
-    return this.applicationService.getHello();
+  getHello (): object {
+    return {
+      title: this.applicationService.getTitle(),
+      description: this.applicationService.getDescription(),
+      version: this.applicationService.getVersion(),
+    };
   }
 
   @ApiBearerAuth()
