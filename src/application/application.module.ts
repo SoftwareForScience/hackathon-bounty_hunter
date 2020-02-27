@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthenticationConfiguration } from '../authentication/authentication.configuration';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import database, { TypeOrmConfigService } from '../config/database.config';
+import { TaskModule } from '../task/task.module';
 import { ApplicationConfiguration } from './application.configuration';
 import { ApplicationController } from './application.controller';
 import { ApplicationService } from './application.service';
@@ -19,6 +20,7 @@ import { ApplicationService } from './application.service';
       ],
       isGlobal: true,
     }),
+    TaskModule,
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
     }),
